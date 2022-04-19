@@ -1,7 +1,7 @@
 Real Cascade U-Nets for Anime Image Super Resolution
 -------------------------------------------
 
-[中文](README.md) **|** [English](README_EN.md)
+[English](README.md) **|** [Simplified Chinese](README_CHS.md)
 
 
 :fire: **Real-CUGAN**:fire: 是一个使用百万级动漫数据进行训练的，结构与Waifu2x兼容的通用动漫图像超分辨率模型。它支持**2x\3x\4x**倍超分辨率，其中2倍模型支持4种降噪强度与保守修复，3倍/4倍模型支持2种降噪强度与保守修复。
