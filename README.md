@@ -1,7 +1,8 @@
 Real Cascade U-Nets for Anime Image Super Resolution
 -------------------------------------------
+[English](README.md) **|** [Simplified Chinese](README_CHS.md)
 
-:fire: **Real-CUGAN**:fire: is an AI super resolution model for anime images, trained in a million scale anime dataset, using the same architecture as Waifu2x-CUNet. It supports **2x\3x\4x** super resolving. For different enhancement strength, now 2x Real-CUGAN supports 5 model weights, 3x/4x Real-CUGAN supports 3 model weights.
+Real-CUGAN is an AI super resolution model for anime images, trained in a million scale anime dataset, using the same architecture as Waifu2x-CUNet. It supports **2x\3x\4x** super resolving. For different enhancement strength, now 2x Real-CUGAN supports 5 model weights, 3x/4x Real-CUGAN supports 3 model weights.
 
 **Real-CUGAN** packages an executable environment for windows users. GUI and web version are also supported now.<br>
 
