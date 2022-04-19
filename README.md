@@ -21,3 +21,5 @@ torch>=1.0.0
 numpy
 opencv-python
 ```
+## Sample (L: origin, R: up4x-latest-no-denoise)
+![raw_up4x](https://user-images.githubusercontent.com/79516102/164012929-9fa3d368-8bb6-4b5b-9a1f-fb3d31d3297b.jpg)
