@@ -5,6 +5,8 @@ import os,sys
 import numpy as np
 root_path=os.path.abspath('.')
 sys.path.append(root_path)
+
+
 def q(inp,cache_mode):
     maxx = inp.max()
     minn = inp.min()
@@ -20,6 +22,8 @@ def dq(inp,if_half,cache_mode,delta,minn,device):
     elif(cache_mode==1):
         if(if_half==True):return inp.half()/255*delta+minn#不用CPU转移
         else:return inp.float()/255*delta+minn
+
+
 class SEBlock(nn.Module):
     def __init__(self, in_channels, reduction=8, bias=False):
         super(SEBlock, self).__init__()
@@ -45,6 +49,8 @@ class SEBlock(nn.Module):
         x0 = torch.sigmoid(x0)
         x = torch.mul(x, x0)
         return x
+
+
 class UNetConv(nn.Module):
     def __init__(self, in_channels, mid_channels, out_channels, se):
         super(UNetConv, self).__init__()
@@ -64,6 +70,8 @@ class UNetConv(nn.Module):
         if self.seblock is not None:
             z = self.seblock(z)
         return z
+
+
 class UNet1(nn.Module):
     def __init__(self, in_channels, out_channels, deconv):
         super(UNet1, self).__init__()
@@ -114,6 +122,8 @@ class UNet1(nn.Module):
         x3 = F.leaky_relu(x3, 0.1, inplace=True)
         z = self.conv_bottom(x3)
         return z
+
+
 class UNet1x3(nn.Module):
     def __init__(self, in_channels, out_channels, deconv):
         super(UNet1x3, self).__init__()
@@ -241,11 +251,15 @@ class UNet2(nn.Module):
         x5 = F.leaky_relu(x5, 0.1, inplace=True)
         z = self.conv_bottom(x5)
         return z
+
+
 class UpCunet2x(nn.Module):
+
     def __init__(self, in_channels=3, out_channels=3):
         super(UpCunet2x, self).__init__()
         self.unet1 = UNet1(in_channels, out_channels, deconv=True)
         self.unet2 = UNet2(in_channels, out_channels, deconv=False)
+
     def forward(self, x,tile_mode,cache_mode,alpha):
         n, c, h0, w0 = x.shape
         if ("Half" in x.type()):if_half=True
@@ -365,6 +379,7 @@ class UpCunet2x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*2,:w0*2]
         return res
+
     def forward_gap_sync(self, x,tile_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -486,6 +501,7 @@ class UpCunet2x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*2,:w0*2]
         return res
+
     def forward_fast_rough(self, x,tile_mode,alpha):
         n, c, h0, w0 = x.shape
         if ("Half" in x.type()):if_half=True
@@ -553,11 +569,15 @@ class UpCunet2x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*2,:w0*2]
         return res
+
+
 class UpCunet3x(nn.Module):
+
     def __init__(self, in_channels=3, out_channels=3):
         super(UpCunet3x, self).__init__()
         self.unet1 = UNet1x3(in_channels, out_channels, deconv=True)
         self.unet2 = UNet2(in_channels, out_channels, deconv=False)
+
     def forward(self, x,tile_mode,cache_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -677,6 +697,7 @@ class UpCunet3x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*3,:w0*3]
         return res
+
     def forward_gap_sync(self, x,tile_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -796,6 +817,7 @@ class UpCunet3x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*3,:w0*3]
         return res
+
     def forward_fast_rough(self, x,tile_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -863,13 +885,17 @@ class UpCunet3x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*3,:w0*3]
         return res
+
+
 class UpCunet4x(nn.Module):
+
     def __init__(self, in_channels=3, out_channels=3):
         super(UpCunet4x, self).__init__()
         self.unet1 = UNet1(in_channels, 64, deconv=True)
         self.unet2 = UNet2(64, 64, deconv=False)
         self.ps=nn.PixelShuffle(2)
         self.conv_final=nn.Conv2d(64,12,3,1,padding=0,bias=True)
+
     def forward(self, x,tile_mode,cache_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -1001,6 +1027,7 @@ class UpCunet4x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*4,:w0*4]
         return res
+
     def forward_gap_sync(self, x,tile_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -1131,6 +1158,7 @@ class UpCunet4x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*4,:w0*4]
         return res
+
     def forward_fast_rough(self, x,tile_mode,alpha):
         n, c, h0, w0 = x.shape
         if("Half" in x.type()):if_half=True
@@ -1205,8 +1233,11 @@ class UpCunet4x(nn.Module):
         torch.cuda.empty_cache()
         if(w0!=pw or h0!=ph):res=res[:,:,:h0*4,:w0*4]
         return res
+
+
 class RealWaifuUpScaler(object):
-    def __init__(self,scale,weight_path,half,device):
+
+    def __init__(self, scale, weight_path, half,device):
         weight = torch.load(weight_path, map_location="cpu")
         self.model=eval("UpCunet%sx"%scale)()
         if(half==True):self.model=self.model.half().to(device)
@@ -1233,6 +1264,7 @@ class RealWaifuUpScaler(object):
             else:
                 result = self.tensor2np(self.model(tensor,tile_mode,cache_mode,alpha))
         return result
+
 
 if __name__ == "__main__":
     ###########inference_img
