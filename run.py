@@ -7,7 +7,7 @@ from upcunet_v3 import RealWaifuUpScaler
 from time import time as ttime  
 
 
-ModelPath = './weights_v3' # model dir
+ModelPath = './weights_v3/' # model dir
 PendingPath = './pending/' # input dir
 FinishPath = './finish/' # output dir
 
@@ -17,10 +17,10 @@ Tile = 4 #{0,1,2,3,4,auto}; the larger the number, the smaller the memory consum
 if not os.path.exists(FinishPath):
     os.mkdir(FinishPath)
 
-pic_paths = glob(PendingPath + '.png')
-pic_paths.extend(glob(PendingPath + '.jpg'))
-pic_paths.extend(glob(PendingPath + '.jpeg'))
-pic_paths.extend(glob(PendingPath + '.bmp'))
+pic_paths = glob(PendingPath + '*.png')
+pic_paths.extend(glob(PendingPath + '*.jpg'))
+pic_paths.extend(glob(PendingPath + '*.jpeg'))
+pic_paths.extend(glob(PendingPath + '*.bmp'))
 
 all_pending_paths = os.listdir(PendingPath)
 
@@ -33,23 +33,42 @@ for pending_path in all_pending_paths:
     if not pending_path in pic_paths:
         print("\t" + pending_path)
 
-pic_paths = os.listdir(ModelPath)
+model_paths = glob(ModelPath + '*.pth')
 print("Model files available:")
 
-for idx, i in enumerate(pic_paths):
-    print(f"{idx+1}. \t {i}")
+for idx, i in enumerate(model_paths):
+    print(f"{idx+1}. \t {os.path.basename(i)}")
 
 choice = int(input("Select model (leave blank for default): "))
 if choice:
-    ModelName = pic_paths[choice-1]
+    ModelName = os.path.basename(model_paths[choice-1])
     
 amplification = ModelName[2] # amplifying ratio
 if (not os.path.isfile(ModelPath + ModelName)):
     print("Warning: selected model file does not exist")
 
-pic_paths = os.listdir(PendingPath)
 print(f"using model {ModelPath + '/' + ModelName}")
-upscaler = RealWaifuUpScaler(amplification, ModelPath + '/' + ModelName, half=True, device="cuda:0")
+
+avail_devices = []
+selected_device = 'cuda:0'
+
+print("Inference device available:")
+
+for i in range(torch.cuda.device_count()):
+    print(f"{i+1}. \t {torch.cuda.get_device_name(i)}")
+    avail_devices += ['cuda:' + str(i)]
+print(f"{torch.cuda.device_count()+1}. \t CPU")
+avail_devices += ['cpu']
+
+choice = int(input("Select running device (leave blank for default): "))
+
+if choice:
+    selected_device = avail_devices[choice-1]
+    print('Using', selected_device)
+    if choice == (torch.cuda.device_count()+1):
+        upscaler = RealWaifuUpScaler(amplification, ModelPath + '/' + ModelName, half=False, device=selected_device)
+
+upscaler = RealWaifuUpScaler(amplification, ModelPath + '/' + ModelName, half=True, device=selected_device)
 
 t0 = ttime()
 
