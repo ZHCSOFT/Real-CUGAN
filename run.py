@@ -11,8 +11,7 @@ ModelPath = './weights_v3/' # model dir
 PendingPath = './pending/' # input dir
 FinishPath = './finish/' # output dir
 
-ModelName = 'up4x-latest-no-denoise.pth' # default model
-Tile = 4 #{0,1,2,3,4,auto}; the larger the number, the smaller the memory consumption
+Tile = 4 #{0, 1, 2, 3, 4, auto}; the larger the number, the smaller the memory consumption
 
 if not os.path.exists(FinishPath):
     os.mkdir(FinishPath)
@@ -33,9 +32,9 @@ for pending_path in all_pending_paths:
     if not pending_path in pic_paths:
         print("\t" + pending_path)
 
+ModelName = 'up4x-latest-no-denoise.pth' # default model
 model_paths = glob(ModelPath + '*.pth')
 print("Model files available:")
-
 for idx, i in enumerate(model_paths):
     print(f"{idx+1}. \t {os.path.basename(i)}")
 
@@ -53,7 +52,6 @@ avail_devices = []
 selected_device = 'cuda:0'
 
 print("Inference device available:")
-
 for i in range(torch.cuda.device_count()):
     print(f"{i+1}. \t {torch.cuda.get_device_name(i)}")
     avail_devices += ['cuda:' + str(i)]
@@ -82,7 +80,7 @@ for i in pic_paths:
         print (i + " FAILED")
         print (e)
     else:
-        print(i+" DONE")
+        print(i + " DONE")
         os.remove(PendingPath+i)
 
 t1 = ttime()
